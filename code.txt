@@ -1,0 +1,185 @@
+Table structure for User
+CREATE TABLE User(
+userID VARCHAR(8) NOT NULL,
+mail_id VARCHAR(8),
+gender varchar(10),
+user_name varchar(20)
+PRIMARY KEY (userID)
+);
+
+Table structure for Passenger
+CREATE TABLE Passenger (
+p_name VARCHAR(8) NOT NULL, 
+passenger_id VARCHAR(8) NOT NULL, 
+ticket_id VARCHAR(9), 
+user_id VARCHAR(8) NOT NULL, 
+seat_type CHAR(5), 
+age int, 
+userID varchar(8), 
+PRIMARY KEY (passenger_id), 
+FOREIGN KEY (userID) REFERENCES user(userID) 
+);
+
+Table structure for Train
+CREATE TABLE Train(
+train_no VARCHAR(9) NOT NULL,
+train_name CHAR(8) NOT NULL,
+passenger_id VARCHAR(8) NOT NULL,
+arrival TIME(0),
+departure TIME(0),
+PRIMARY KEY (train_no),
+FOREIGN KEY (passenger_id) REFERENCES passenger(passenger_id) 
+);
+
+Table structure for Train_Status
+CREATE TABLE Train_Status (
+Pnr VARCHAR(8) NOT NULL, 
+t_length int, train_no VARCHAR(9), 
+PRIMARY KEY (Pnr), 
+FOREIGN KEY (train_no) REFERENCES train(train_no) 
+);
+
+Table structure for Station
+CREATE TABLE Station (
+s_name VARCHAR(8) NOT NULL, 
+s_no VARCHAR(8) NOT NULL, 
+halt_trains VARCHAR(9), 
+PRIMARY KEY (s_no)
+);
+
+Table structure for route_map
+CREATE TABLE route_Mapp (
+train_no VARCHAR(9) NOT NULL, 
+rootID varchar(10) not null primary key, 
+s_no CHAR(8) NOT NULL, 
+halt_stations CHAR(8), 
+route_length int, 
+FOREIGN KEY (s_no) REFERENCES station(s_no)
+);
+
+Table structure for ticket
+CREATE TABLE ticket(
+TicketID VARCHAR(20) NOT NULL,
+Status VARCHAR(20) NOT NULL,
+train_no int,
+Cost DECIMAL(10,2),
+PRIMARY KEY(TicketID)
+);
+
+Table structure for Platform
+CREATE TABLE Platform(
+PNo int NOT NULL,
+train_no VARCHAR(9),
+PRIMARY KEY(PNo),
+FOREIGN KEY(train_no) REFERENCES TRAIN(train_no)
+);
+
+Table structure for TrainDetails
+CREATE TABLE TrainDetails(
+StationNum int NOT NULL,
+train_no VARCHAR(8),
+region varchar(10),
+PRIMARY KEY(StationNum),
+FOREIGN KEY(train_no) REFERENCES Train(train_no)
+);
+
+Table structure for classes
+CREATE TABLE classes (
+seat_type varchar(20),
+business varchar(10),
+general varchar(10),
+passenger_id varchar(8),
+economy varchar(10),
+FOREIGN KEY (passenger_id) REFERENCES passenger(passenger_id)
+);
+
+SQL STATEMENTS TO INSERT DATA INTO TABLES
+
+USER:
+insert into user values
+('ashok1','ash1@gmail.com','m','ashok'),
+('sharief2','sha2@gmail.com','m','sharief'),
+('sai3','sai3@gmail.com','m','sai'),
+('suri4','suri4@gmail.com','m','suri');
+
+PASSENGER:
+insert into passenger values
+('ashok','1234','456','AC',20,'ashok1'),
+('sharief','1235','457','NONAC',25,'sharief2'),
+('sai','1236','458','TIREA',26,'sai3'),
+('suri','1237','459','TIREB',24,'suri4');
+
+TRAIN:
+insert into train values
+('TR1234','amar','1234','11:30:00','11:35:12'),
+('TR1235','ganga','1235','12:23:23','02:55:02'),
+('TR1236','vadodar','1236','13:23:23','23:12:56'),
+('TR1237','delhi','1237','01:23:23','06:52:00');
+
+TRAIN_STATUS:
+insert into train_status values
+('pnr1',28,'TR1234'),
+('pnr2',58,'TR1235'),
+('pnr3',82,'TR1236'),
+('pnr4',77,'TR1237');
+
+STATION:
+insert into station values
+('ANDHRA','s32','4'),
+('HYD','sn2','2'),
+('DELHI','sn3','3'),
+('GOA','sn4','4');
+
+ROUTE_MAP:
+insert into route_mapp values
+('TR1234','r1','s32','2',535),
+('TR1235','r2','sn2','3',544),
+('TR1236','r3','sn3','10',95),
+('TR1237','r4','sn4','8',758);
+
+TICKET:
+insert into ticket values
+('tk1','running','TR1234',23.56),
+('tk2','running','TR1235',56.56),
+('tk3','stopped','TR1236',12.23),
+('tk4','running','TR1237',100.00);
+
+PLATFORM:
+insert into platform values
+(12,'TR1234'),
+(23,'TR1235'),
+(45,'TR1236'),
+(32,'TR1237');
+
+CLASSES:
+insert into classes values
+('AC','y','n','1234','n'),
+('NON-AC','n','y','1235','n'),
+('TIRE-1','n','n','1236','y'),
+('TIRE-2','y','n','1237','n');
+
+TRAIN DETAILS:
+insert into traindetails values
+(12,'TR1234','south'),
+(1,'TR1235','esat'),
+(6,'TR1236','north'),
+(11,'TR1237','south');
+
+QUERIES AND RESULTS
+
+INNER JOIN:
+select passenger_id,
+region,
+train_name from traindetails inner join train on traindetails.train_no=train.train_no;
+
+OUTER JOIN:
+select stationnum, 
+region,
+train_name from traindetails left outer join train on traindetails.train_no=train.train_no;
+
+SUB-QUERY:
+select * from train where train_no in(select train_no from ticket where ticketid in ('tk1','tk3'));
+
+CORRELATED SUBQUERY:
+SELECT DISTINCT p_name,userID,seat_type from passenger where exists(select*from train 
+where train.passenger_id = passenger.passenger_id);
